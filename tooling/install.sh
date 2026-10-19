@@ -106,11 +106,16 @@ done
 # Our own scripts (bin/): copied, not wrapped, so they keep working when the repo checkout moves.
 install -m 0755 "$here"/bin/* "$prefix/bin/"
 
-# Python, by the pinned uv (its release fixes the patch version and checksum).
+# Python and Python tools, by the pinned uv (its release fixes the patch version and checksum).
+# --force: bin/ was just rebuilt, and uv skips a tool it already has.
 python=3.12
 uv_env=(UV_PYTHON_INSTALL_DIR="$prefix/uv-python" UV_PYTHON_BIN_DIR="$prefix/bin"
-    UV_CACHE_DIR="$tmp/uv-cache" UV_PYTHON_PREFERENCE=only-managed)
+    UV_TOOL_DIR="$prefix/uv-tools" UV_TOOL_BIN_DIR="$prefix/bin" UV_CACHE_DIR="$tmp/uv-cache"
+    UV_PYTHON_PREFERENCE=only-managed)
 env "${uv_env[@]}" "$prefix/bin/uv" python install --default --preview-features python-install-default "$python"
+{ grep -Ev '^[[:space:]]*(#|$)' "$here/uv-tools.txt" || true; } | while IFS= read -r spec; do
+    env "${uv_env[@]}" UV_PYTHON_DOWNLOADS=never "$prefix/bin/uv" tool install --force --python "$python" "$spec"
+done
 
 # Verify through env.sh itself, as both sides will use it.
 (

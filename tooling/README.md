@@ -63,7 +63,7 @@ sources `env/<tool>.sh`, which derive everything else from the roots.
 | --- | --- |
 | `env/rust.sh` | `RUSTUP_HOME` (here), `CARGO_HOME` (workspace cache) |
 | `env/go.sh` | `GOTOOLCHAIN=local`, `GOPATH`, `GOMODCACHE`, `GOCACHE` |
-| `env/uv.sh` | `UV_CACHE_DIR` (workspace cache), `UV_PYTHON_INSTALL_DIR` (here), `UV_PYTHON_DOWNLOADS=never`, `UV_PYTHON_PREFERENCE` |
+| `env/uv.sh` | `UV_CACHE_DIR` (workspace cache), `UV_PYTHON_INSTALL_DIR`, `UV_TOOL_DIR` (here), `UV_PYTHON_DOWNLOADS=never`, `UV_PYTHON_PREFERENCE` |
 | `env/sccache.sh` | `SCCACHE_DIR` |
 
 On the host, source it **last** in your shell startup, after anything else that edits `PATH` or
@@ -89,7 +89,7 @@ interpreter's absolute path, so the Python lives here, at one path on host and c
 Venvs link uv's minor-version dir (`cpython-3.12-…`), so a patch update keeps them working.
 Downloads are off and uv uses only these (`only-managed`): a distro Python differs per OS. The base
 interpreter is PEP 668 externally managed and read-only, so nothing installs into it; use a
-venv or `uv run --with`.
+venv, `uv run --with`, or for a CLI tool a pinned line in `uv-tools.txt`.
 
 ## Shared git objects
 

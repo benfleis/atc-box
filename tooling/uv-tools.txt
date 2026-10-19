@@ -1,0 +1,3 @@
+# Python CLI tools for both sides, one pinned spec per line (`ruff==0.14.0`); install.sh puts
+# each in its own venv under uv-tools/, with its commands in bin/.
+pre-commit==4.7.0
