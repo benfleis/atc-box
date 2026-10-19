@@ -63,7 +63,7 @@ sources `env/<tool>.sh`, which derive everything else from the roots.
 | --- | --- |
 | `env/rust.sh` | `RUSTUP_HOME` (here), `CARGO_HOME` (workspace cache) |
 | `env/go.sh` | `GOTOOLCHAIN=local`, `GOPATH`, `GOMODCACHE`, `GOCACHE` |
-| `env/uv.sh` | `UV_CACHE_DIR`, `UV_PYTHON_INSTALL_DIR` |
+| `env/uv.sh` | `UV_CACHE_DIR` (workspace cache), `UV_PYTHON_INSTALL_DIR` (here), `UV_PYTHON_DOWNLOADS=never`, `UV_PYTHON_PREFERENCE` |
 | `env/sccache.sh` | `SCCACHE_DIR` |
 
 On the host, source it **last** in your shell startup, after anything else that edits `PATH` or
@@ -84,11 +84,12 @@ The host may source the workspace's `config/zsh/*` too: the container mounts `co
 so a session cannot plant anything there.
 
 Same binaries plus same paths is what lets one artifact serve both sides. A venv records its
-interpreter's absolute path; with one `uv` and one `UV_PYTHON_INSTALL_DIR`, uv-managed Pythons live
-at the same path on host and container, so a single `.venv` works in both. If either side falls
-back to its own default (`~/.local/share/uv/python`), venvs built there dangle on the other. The
-same goes for a distro Python (`/usr/bin/python3` differs per OS), so uv is told to use only its
-own Pythons: `UV_PYTHON_PREFERENCE=only-managed` (set in the workspace's `config/zsh/env-local.zsh`).
+interpreter's absolute path, so the Python lives here, at one path on host and container:
+`install.sh` installs 3.12 with uv into `uv-python/`, as `bin/python3` (and `python`, `python3.12`).
+Venvs link uv's minor-version dir (`cpython-3.12-…`), so a patch update keeps them working.
+Downloads are off and uv uses only these (`only-managed`): a distro Python differs per OS. The base
+interpreter is PEP 668 externally managed and read-only, so nothing installs into it; use a
+venv or `uv run --with`.
 
 ## Shared git objects
 

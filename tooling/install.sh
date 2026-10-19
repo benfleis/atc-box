@@ -106,10 +106,17 @@ done
 # Our own scripts (bin/): copied, not wrapped, so they keep working when the repo checkout moves.
 install -m 0755 "$here"/bin/* "$prefix/bin/"
 
+# Python, by the pinned uv (its release fixes the patch version and checksum).
+python=3.12
+uv_env=(UV_PYTHON_INSTALL_DIR="$prefix/uv-python" UV_PYTHON_BIN_DIR="$prefix/bin"
+    UV_CACHE_DIR="$tmp/uv-cache" UV_PYTHON_PREFERENCE=only-managed)
+env "${uv_env[@]}" "$prefix/bin/uv" python install --default --preview-features python-install-default "$python"
+
 # Verify through env.sh itself, as both sides will use it.
 (
     TOOLING_ROOT=$prefix
     . "$prefix/env.sh"
     rustc --version; cargo --version; uv --version; sccache --version; go version
+    python3 --version
     clang --version | head -1; clang++ --version | head -1
 )
