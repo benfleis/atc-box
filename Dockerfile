@@ -215,10 +215,14 @@ RUN chmod 755 /usr/local/bin/iso-merge-config
 # Lock the $HOME defaults the env above replaces: empty, root-owned, read-only, so
 # a tool that ignores the env fails loudly instead of writing to the container
 # layer a recreate throws away. ~/.claude-state stays reachable as a link: Claude's
-# own records store absolute paths under it.
+# own records store absolute paths under it. ~/.pi/agent is a link to pi's
+# sandbox agent dir (PI_CODING_AGENT_DIR): pi-vimmode 0.9 reads its settings
+# from ~/.pi/agent/settings.json regardless of PI_CODING_AGENT_DIR, so with a
+# locked ~/.pi its keymap (ctrl-[ as escape) silently did not load.
 RUN cd /home/iso-claude \
   && rm -rf .claude .claude-state .cache .npm .cargo .rustup .pi .codex \
   && ln -s /opt/workspace/state/iso-claude .claude-state \
-  && mkdir -m 0555 .claude .cache .npm .cargo .rustup .pi .codex
+  && mkdir -m 0555 .claude .cache .npm .cargo .rustup .codex \
+  && mkdir .pi && ln -s /opt/workspace/state/iso-pi .pi/agent && chmod 0555 .pi
 
 USER iso-claude
