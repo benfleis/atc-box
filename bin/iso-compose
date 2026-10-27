@@ -6,7 +6,7 @@
 # container under a running session.
 set -euo pipefail
 
-COMPOSE_DIR="/opt/workspace/src/iso-claude" # where your docker-compose.yaml lives
+COMPOSE_DIR="${ISO_COMPOSE_DIR:-/opt/workspace/src/iso-claude}" # where your docker-compose.yaml lives (ISO_COMPOSE_DIR: a worktree, for tests)
 source "$COMPOSE_DIR/bin/iso-common.sh"
 
 iso_load_settings

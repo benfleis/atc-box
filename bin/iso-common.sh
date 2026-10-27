@@ -2,7 +2,11 @@
 # directly; sourced by each (`source "$COMPOSE_DIR/bin/iso-common.sh"` after it
 # sets COMPOSE_DIR itself, since that's needed to find this file).
 
-SERVICE=claude
+# The compose service, image and container are iso-agent (they were all
+# iso-claude/claude until the 2026-10 switch; the container user, the state dir
+# and ~/.config/iso-claude kept their names). ISO_IMAGE / ISO_CONTAINER with
+# COMPOSE_PROJECT_NAME select a second, test sandbox (README).
+SERVICE=agent
 
 # Export the launcher settings (~/.config/iso-claude/.env, optional) so every
 # `docker compose` we run interpolates the same config. EVERY compose entry point
@@ -107,15 +111,15 @@ iso_ensure_running() {
   # switching to a new image/config is a deliberate `iso-compose up -d`.
   docker compose -f "$COMPOSE_DIR/docker-compose.yaml" up -d --no-recreate >/dev/null
 
-  # The image's iso-claude uid:gid is baked in at build time (ISO_UID/ISO_GID,
+  # The image's iso-claude user uid:gid is baked in at build time (ISO_UID/ISO_GID,
   # recorded in a label) and must equal ours, or $HOME and npm-global are
   # unwritable. A plain `docker compose build` skips iso_load_settings, so
   # check the label rather than trust the build.
   local want have
   want="$(id -u):$(id -g)"
-  have=$(docker image inspect -f '{{index .Config.Labels "iso-claude.uid-gid"}}' "${ISO_IMAGE:-iso-claude}" 2>/dev/null || true)
+  have=$(docker image inspect -f '{{index .Config.Labels "iso-claude.uid-gid"}}' "${ISO_IMAGE:-iso-agent}" 2>/dev/null || true)
   if [ "$have" != "$want" ]; then
-    echo "$name: image iso-claude is built for uid:gid '${have:-unknown}', but you are $want." >&2
+    echo "$name: image ${ISO_IMAGE:-iso-agent} is built for uid:gid '${have:-unknown}', but you are $want." >&2
     echo "$name: set ISO_UID/ISO_GID in ~/.config/iso-claude/.env, then: iso-compose build && iso-compose up -d  (recreates the container, ending running sessions)" >&2
     exit 1
   fi

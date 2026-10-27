@@ -2,7 +2,7 @@
 # iso-shell — run an interactive shell inside the standing sandbox container.
 set -euo pipefail
 
-COMPOSE_DIR="/opt/workspace/src/iso-claude" # where your docker-compose.yaml lives
+COMPOSE_DIR="${ISO_COMPOSE_DIR:-/opt/workspace/src/iso-claude}" # where your docker-compose.yaml lives (ISO_COMPOSE_DIR: a worktree, for tests)
 source "$COMPOSE_DIR/bin/iso-common.sh"
 
 iso_prepare_env "iso-shell"

@@ -1,5 +1,9 @@
+# Project, service, image and container: iso-agent (one sandbox for claude, pi and
+# codex; bin/). Until 2026-10 all were iso-claude, a separate project, so the
+# switch starts a new container next to the old one instead of recreating it.
+name: iso-agent
 services:
-  claude:
+  agent:
     build:
       context: .
       # Image user must match the host user sessions exec as; set per host in
@@ -11,8 +15,8 @@ services:
         USER_GID: ${ISO_GID:-1000}
     # ISO_IMAGE / ISO_CONTAINER (with COMPOSE_PROJECT_NAME) only for a second,
     # test sandbox next to the live one; unset, they are the live names.
-    image: ${ISO_IMAGE:-iso-claude}
-    container_name: ${ISO_CONTAINER:-iso-claude}
+    image: ${ISO_IMAGE:-iso-agent}
+    container_name: ${ISO_CONTAINER:-iso-agent}
     init: true
     entrypoint: ["/usr/local/bin/entrypoint.sh"]
     command: ["sleep", "infinity"]

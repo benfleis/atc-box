@@ -1,4 +1,4 @@
-# iso-claude
+# iso-claude (iso-agent)
 
 A sandboxed [Claude Code](https://claude.com/claude-code) environment for an
 always-on box, safe enough to run unattended (including
@@ -46,7 +46,7 @@ place you live in. Persistence (tmux, shells) stays on the host; each
 a `/opt/workspace` bind-mount, the read-only `/opt/tooling` toolchains, and one firewall.
 
 ```
-host ── bin/iso-claude ──▶ docker compose exec --user <you> claude …
+host ── bin/iso-claude ──▶ docker compose exec --user <you> agent claude …
                                │
                                ▼
                      ┌─────────────────────────────┐
@@ -193,15 +193,22 @@ so herdr detects it, no herdr socket inside. Each gets a sandbox-only config
 dir in the workspace, never the host's: `state/iso-pi` (`PI_CODING_AGENT_DIR`)
 and `state/iso-codex` (`CODEX_HOME`), seeded on first use from
 `config/dotfiles/{pi/iso-pi/settings.json,codex/iso-codex/config.toml}`. pi
-loads `config/pi-nav` and `config/pi-atc` from the read-only mount on every
-launch (`-e`); pi-vimmode is an npm package in the seeded settings, installed
+loads `config/pi-nav` from the read-only mount on every launch (`-e`; pi-atc
+stays out of the sandbox for now); pi-vimmode is an npm package in the seeded settings, installed
 into `state/iso-pi/npm`. Codex uses its built-in `amazon-bedrock` provider
 (`bedrock-mantle.us-east-1.api.aws`) and runs without its own bubblewrap
 sandbox, which cannot start in the container.
 
+**Names.** The compose project, service, image and container are all
+`iso-agent` (until 2026-10: project/image/container `iso-claude`, service
+`claude`). The container user (`iso-claude`), Claude's state dir
+(`state/iso-claude`) and the launcher settings (`~/.config/iso-claude`) kept
+their names.
+
 **A second, test sandbox.** `COMPOSE_PROJECT_NAME`, `ISO_IMAGE` and
 `ISO_CONTAINER` give every script a separate project, image and container, so a
-new image can be built and tried next to the live one without touching it:
+new image can be built and tried next to the live one without touching it;
+`ISO_COMPOSE_DIR` runs the scripts of another checkout (a worktree):
 
 ```bash
 export COMPOSE_PROJECT_NAME=iso-pi-test ISO_IMAGE=iso-agent-test ISO_CONTAINER=iso-pi-test

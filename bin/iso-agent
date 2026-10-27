@@ -19,7 +19,7 @@
 # it, the defaults below. No host credential is passed in.
 set -euo pipefail
 
-COMPOSE_DIR="/opt/workspace/src/iso-claude" # where your docker-compose.yaml lives
+COMPOSE_DIR="${ISO_COMPOSE_DIR:-/opt/workspace/src/iso-claude}" # where your docker-compose.yaml lives (ISO_COMPOSE_DIR: a worktree, for tests)
 source "$COMPOSE_DIR/bin/iso-common.sh"
 
 agent=${0##*/}
@@ -82,10 +82,10 @@ pi)
   env_args+=(-e "PI_CODING_AGENT_DIR=$cstate" -e PI_SKIP_VERSION_CHECK=1 -e PI_TELEMETRY=0)
   seed=$seed_dir/pi/iso-pi/settings.json
   dst=$cstate/settings.json
-  # The workspace's own extensions, from the read-only config mount on every
-  # launch (pi-vimmode is an npm package in the seeded settings, installed into
-  # the sandbox agent dir).
-  cmd=(pi -e /opt/workspace/config/pi-nav -e /opt/workspace/config/pi-atc)
+  # pi-nav from the read-only config mount on every launch (pi-vimmode is an
+  # npm package in the seeded settings, installed into the sandbox agent dir).
+  # pi-atc stays out of the sandbox for now (owner, 2026-10-27).
+  cmd=(pi -e /opt/workspace/config/pi-nav)
   ;;
 codex)
   env_args+=(-e "CODEX_HOME=$cstate")

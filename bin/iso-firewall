@@ -24,7 +24,7 @@
 set -euo pipefail
 export LC_ALL=C # byte-order collation so `sort` and `comm` always agree
 
-COMPOSE_DIR="${ISO_CLAUDE_DIR:-/opt/workspace/src/iso-claude}"
+COMPOSE_DIR="${ISO_COMPOSE_DIR:-${ISO_CLAUDE_DIR:-/opt/workspace/src/iso-claude}}"
 COMPOSE_FILE="$COMPOSE_DIR/docker-compose.yaml"
 # Settings only (not secrets): our `dc up -d` must interpolate the same config
 # as the launcher's, or it would recreate the container under a running session.
