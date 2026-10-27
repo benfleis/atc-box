@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+# iso-agent — run pi or Codex inside the standing sandbox container, the way
+# iso-claude runs Claude. Called as iso-pi / iso-codex (links to this file) or
+# as `iso-agent <pi|codex|claude> [args]`; the args go to the agent.
+#
+# Each agent gets a sandbox-only config dir inside the workspace, never the
+# host's (~/.pi/agent holds auth.json and extensions that run on the host,
+# ~/.codex the host's Codex auth and config):
+#   pi     PI_CODING_AGENT_DIR = $ISO_PI_STATE_DIR    (default state/iso-pi)
+#   codex  CODEX_HOME          = $ISO_CODEX_STATE_DIR (default state/iso-codex)
+# Host sessions never read these dirs: the sandbox can write them. On first use
+# the config is seeded (copied, inside the container) from the read-only
+# config/dotfiles/{pi/iso-pi/settings.json,codex/iso-codex/config.toml}; after
+# that it is the sandbox's own file.
+#
+# Models: Bedrock through the AWS profile iso-aws-refresh keeps fresh
+# ($CLAUDE_STATE_DIR/aws). The AWS_* (and TZ) values come from the env block of
+# the host-local ~/.config/iso-claude/settings.json, as for iso-claude; without
+# it, the defaults below. No host credential is passed in.
+set -euo pipefail
+
+COMPOSE_DIR="/opt/workspace/src/iso-claude" # where your docker-compose.yaml lives
+source "$COMPOSE_DIR/bin/iso-common.sh"
+
+agent=${0##*/}
+agent=${agent#iso-}
+if [[ "$agent" == agent ]]; then
+  agent=${1:-}
+  shift || true
+fi
+case "$agent" in
+pi | codex) ;;
+claude) exec "$COMPOSE_DIR/bin/iso-claude" "$@" ;;
+*)
+  echo "usage: iso-agent <pi|codex|claude> [args...]  (or call it as iso-pi / iso-codex)" >&2
+  exit 2
+  ;;
+esac
+name="iso-$agent"
+
+iso_prepare_env "$name"
+
+# The agent's state dir: on the host, inside the workspace (like CLAUDE_STATE_DIR),
+# created here so Docker never makes it root-owned. Owner-only: it holds sessions.
+case "$agent" in
+pi) state=${ISO_PI_STATE_DIR:-$CLAUDE_WORK_DIR/state/iso-pi} ;;
+codex) state=${ISO_CODEX_STATE_DIR:-$CLAUDE_WORK_DIR/state/iso-codex} ;;
+esac
+case "$state" in
+"$CLAUDE_WORK_DIR"/?*) ;;
+*)
+  echo "$name: state dir ($state) must be inside CLAUDE_WORK_DIR ($CLAUDE_WORK_DIR)" >&2
+  exit 1
+  ;;
+esac
+mkdir -p "$state"
+chmod 700 "$state"
+cstate="/opt/workspace/${state#"$CLAUDE_WORK_DIR"/}" # as the container sees it
+
+iso_ensure_running "$name"
+
+# Bedrock: the same AWS config and profile iso-claude's sessions use.
+env_args=(
+  -e "AWS_CONFIG_FILE=$ISO_CLAUDE_CONFIG_DIR/aws/config"
+  -e "AWS_PROFILE=${ISO_AWS_PROFILE:-agent-bedrock}"
+  -e "AWS_REGION=${ISO_AWS_REGION:-eu-west-1}"
+)
+iso_local="${XDG_CONFIG_HOME:-$HOME/.config}/iso-claude/settings.json"
+if [[ -r "$iso_local" ]]; then
+  while IFS= read -r kv; do
+    env_args+=(-e "$kv")
+  done < <(jq -r '.env // {} | to_entries[] | select(.key | test("^(AWS_[A-Z_]+|TZ)$"))
+                  | "\(.key)=\(.value)"' "$iso_local")
+fi
+# GH_TOKEN rides along when set, so `gh` is authenticated inside the sandbox.
+if [[ -n "${GH_TOKEN:-}" ]]; then env_args+=(-e GH_TOKEN); fi
+
+seed_dir=/opt/workspace/config/dotfiles
+case "$agent" in
+pi)
+  # pi.dev (version check, telemetry) is not allowlisted; don't wait on it.
+  env_args+=(-e "PI_CODING_AGENT_DIR=$cstate" -e PI_SKIP_VERSION_CHECK=1 -e PI_TELEMETRY=0)
+  seed=$seed_dir/pi/iso-pi/settings.json
+  dst=$cstate/settings.json
+  # The workspace's own extensions, from the read-only config mount on every
+  # launch (pi-vimmode is an npm package in the seeded settings, installed into
+  # the sandbox agent dir).
+  cmd=(pi -e /opt/workspace/config/pi-nav -e /opt/workspace/config/pi-atc)
+  ;;
+codex)
+  env_args+=(-e "CODEX_HOME=$cstate")
+  seed=$seed_dir/codex/iso-codex/config.toml
+  dst=$cstate/config.toml
+  cmd=(codex)
+  ;;
+esac
+
+# No TTY under a non-interactive caller (scripts, tests): compose exec would refuse.
+tty_args=()
+[[ -t 0 && -t 1 ]] || tty_args=(-T)
+
+# Herdr: it recognizes an agent by the pane's foreground argv[0], so a bash parent
+# named after the agent stays in the foreground and runs docker as its child (see
+# iso-claude). The sandbox gets no herdr env or socket: detection is by name only.
+exec -a "$agent" bash -c 'docker "$@"; exit $?' "$agent" \
+  compose -f "$COMPOSE_DIR/docker-compose.yaml" \
+  exec --user "$(id -u):$(id -g)" "${tty_args[@]}" "${env_args[@]}" "$SERVICE" \
+  bash -c '[ -e "$2" ] || cp "$1" "$2"; shift 2; exec "$@"' seed "$seed" "$dst" "${cmd[@]}" "$@"

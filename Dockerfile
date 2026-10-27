@@ -8,6 +8,10 @@ ARG TZ
 ENV TZ="$TZ"
 
 ARG CLAUDE_CODE_VERSION=latest
+# The other agents bin/iso-agent can start (iso-pi, iso-codex); pinned to the
+# host's mise versions (~/.config/mise/config.toml).
+ARG PI_VERSION=1.3.0
+ARG CODEX_VERSION=0.163.0
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -180,10 +184,19 @@ RUN mkdir -p /home/iso-claude/.config && env -C /home/iso-claude/.config ln -sf 
 # Install Claude
 RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 
+# pi and Codex, for bin/iso-agent (iso-pi, iso-codex). Their config and sessions
+# live in the workspace (PI_CODING_AGENT_DIR, CODEX_HOME below), never in $HOME.
+RUN npm install -g @earendil-works/pi-coding-agent@${PI_VERSION} @openai/codex@${CODEX_VERSION}
+
 # Runtime caches go to the shared cache (docs/data-zones.md). Set after the
 # build-time npm install, whose cache stays in the image layer.
 ENV XDG_CACHE_HOME=/opt/workspace/cache \
     npm_config_cache=/opt/workspace/cache/npm
+
+# Sandbox-only agent dirs (bin/iso-agent passes the same, derived from the
+# launcher settings); the host's ~/.pi/agent and ~/.codex are never mounted.
+ENV PI_CODING_AGENT_DIR=/opt/workspace/state/iso-pi \
+    CODEX_HOME=/opt/workspace/state/iso-codex
 
 # Copy and set up firewall script
 USER root
@@ -199,8 +212,8 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # layer a recreate throws away. ~/.claude-state stays reachable as a link: Claude's
 # own records store absolute paths under it.
 RUN cd /home/iso-claude \
-  && rm -rf .claude .claude-state .cache .npm .cargo .rustup \
+  && rm -rf .claude .claude-state .cache .npm .cargo .rustup .pi .codex \
   && ln -s /opt/workspace/state/iso-claude .claude-state \
-  && mkdir -m 0555 .claude .cache .npm .cargo .rustup
+  && mkdir -m 0555 .claude .cache .npm .cargo .rustup .pi .codex
 
 USER iso-claude

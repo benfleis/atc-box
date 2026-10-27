@@ -116,6 +116,7 @@ itself, caches, shell config), and why, is in
 | `init-firewall.sh` | In-container **scaffolding only** — static rules + empty ipset |
 | `bin/iso-firewall` | **Host-side reconcile** — resolves the allowlist and applies it |
 | `bin/iso-claude` | Launch a Claude session in the sandbox |
+| `bin/iso-agent` (`iso-pi`, `iso-codex`) | Launch pi or Codex in the sandbox; see **Other agents** |
 | `bin/iso-shell` | Drop into an interactive shell in the sandbox |
 | `bin/iso-compose` | `docker compose` with the launcher settings loaded (build, down, logs) |
 | `allowlist.conf` | The egress allowlist (host-editable) |
@@ -182,6 +183,31 @@ To make it the default, uncomment the YOLO `exec` line in `bin/iso-claude`
 (and comment the default one). This is only defensible because egress is
 allowlist-locked and the session is contained — see [Goal](#goal) and
 [Caveats](#caveats). Don't point it at adversarial content.
+
+**Other agents: pi and Codex.** The image also carries pi and the Codex CLI.
+`iso-pi` and `iso-codex` (links to `bin/iso-agent`; `iso-agent <pi|codex|claude>`
+works too) start them like `iso-claude`: same container, Bedrock through the
+`iso-aws-refresh` profile (AWS_* from the host-local
+`~/.config/iso-claude/settings.json` env block), argv[0] named after the agent
+so herdr detects it, no herdr socket inside. Each gets a sandbox-only config
+dir in the workspace, never the host's: `state/iso-pi` (`PI_CODING_AGENT_DIR`)
+and `state/iso-codex` (`CODEX_HOME`), seeded on first use from
+`config/dotfiles/{pi/iso-pi/settings.json,codex/iso-codex/config.toml}`. pi
+loads `config/pi-nav` and `config/pi-atc` from the read-only mount on every
+launch (`-e`); pi-vimmode is an npm package in the seeded settings, installed
+into `state/iso-pi/npm`. Codex uses its built-in `amazon-bedrock` provider
+(`bedrock-mantle.us-east-1.api.aws`) and runs without its own bubblewrap
+sandbox, which cannot start in the container.
+
+**A second, test sandbox.** `COMPOSE_PROJECT_NAME`, `ISO_IMAGE` and
+`ISO_CONTAINER` give every script a separate project, image and container, so a
+new image can be built and tried next to the live one without touching it:
+
+```bash
+export COMPOSE_PROJECT_NAME=iso-pi-test ISO_IMAGE=iso-agent-test ISO_CONTAINER=iso-pi-test
+iso-compose build && iso-pi     # builds iso-agent-test, starts iso-pi-test
+iso-compose down                # removes only the test container
+```
 
 **Manage the allowlist**
 

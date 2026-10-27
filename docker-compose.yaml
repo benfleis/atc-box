@@ -9,8 +9,10 @@ services:
       args:
         USER_UID: ${ISO_UID:-1000}
         USER_GID: ${ISO_GID:-1000}
-    image: iso-claude
-    container_name: iso-claude
+    # ISO_IMAGE / ISO_CONTAINER (with COMPOSE_PROJECT_NAME) only for a second,
+    # test sandbox next to the live one; unset, they are the live names.
+    image: ${ISO_IMAGE:-iso-claude}
+    container_name: ${ISO_CONTAINER:-iso-claude}
     init: true
     entrypoint: ["/usr/local/bin/entrypoint.sh"]
     command: ["sleep", "infinity"]

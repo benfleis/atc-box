@@ -113,7 +113,7 @@ iso_ensure_running() {
   # check the label rather than trust the build.
   local want have
   want="$(id -u):$(id -g)"
-  have=$(docker image inspect -f '{{index .Config.Labels "iso-claude.uid-gid"}}' iso-claude 2>/dev/null || true)
+  have=$(docker image inspect -f '{{index .Config.Labels "iso-claude.uid-gid"}}' "${ISO_IMAGE:-iso-claude}" 2>/dev/null || true)
   if [ "$have" != "$want" ]; then
     echo "$name: image iso-claude is built for uid:gid '${have:-unknown}', but you are $want." >&2
     echo "$name: set ISO_UID/ISO_GID in ~/.config/iso-claude/.env, then: iso-compose build && iso-compose up -d  (recreates the container, ending running sessions)" >&2
