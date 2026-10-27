@@ -51,16 +51,17 @@ fi
 # Hand off to claude inside it, passing along any args you typed.
 # --user drops the session to the host UID (PID 1 stayed root for the firewall).
 #
-# YOLO mode: to run unattended with no permission prompts, add
-# --dangerously-skip-permissions. Comment the line below and uncomment this one.
-# Only defensible because egress is allowlist-locked and the session can't escape
-# the container — never point it at adversarial content (see README caveats).
+# YOLO mode is the default (owner, 2026-10-27): --dangerously-skip-permissions,
+# no permission prompts. Only defensible because egress is allowlist-locked and
+# the session can't escape the container; never point it at adversarial content
+# (see README caveats). For prompts, drop the flag from the line below.
 #
 # Herdr: it recognizes an agent by the pane's foreground argv[0], so a bash parent
 # named `claude` stays in the foreground and runs docker as its child. (Renaming
 # docker itself via `exec -a claude docker` breaks the docker CLI.) The sandbox
 # gets no herdr env or socket: host-side herdr drives it, nothing inside can.
-# exec -a claude bash -c 'docker "$@"; exit $?' claude compose -f "$COMPOSE_DIR/docker-compose.yaml" \
-#     exec --user "$(id -u):$(id -g)" "${env_args[@]}" "$SERVICE" claude --dangerously-skip-permissions --settings "$ISO_SETTINGS_OVERLAY" "$@"
+tty_args=()
+[[ -t 0 && -t 1 ]] || tty_args=(-T) # no TTY under scripts: compose exec would refuse
 exec -a claude bash -c 'docker "$@"; exit $?' claude compose -f "$COMPOSE_DIR/docker-compose.yaml" \
-  exec --user "$(id -u):$(id -g)" "${env_args[@]}" "$SERVICE" claude --settings "$ISO_SETTINGS_OVERLAY" "$@"
+  exec --user "$(id -u):$(id -g)" "${tty_args[@]}" "${env_args[@]}" "$SERVICE" \
+  claude --dangerously-skip-permissions --settings "$ISO_SETTINGS_OVERLAY" "$@"

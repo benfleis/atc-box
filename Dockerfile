@@ -207,6 +207,11 @@ RUN chmod +x /usr/local/bin/init-firewall.sh
 COPY entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
+# bin/iso-agent runs it before each pi/codex launch: the dotfiles keys over the
+# sandbox's own config file (python3 from /opt/tooling).
+COPY iso-merge-config /usr/local/bin/
+RUN chmod 755 /usr/local/bin/iso-merge-config
+
 # Lock the $HOME defaults the env above replaces: empty, root-owned, read-only, so
 # a tool that ignores the env fails loudly instead of writing to the container
 # layer a recreate throws away. ~/.claude-state stays reachable as a link: Claude's

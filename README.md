@@ -114,6 +114,7 @@ itself, caches, shell config), and why, is in
 | `Dockerfile` | Ubuntu 26.04 base + build toolchain + Claude Code + firewall scaffolding |
 | `entrypoint.sh` | Runs `init-firewall.sh` as root at boot, then idles |
 | `init-firewall.sh` | In-container **scaffolding only** — static rules + empty ipset |
+| `iso-merge-config` | In-container: merges the dotfiles config over pi/codex's own file before each launch |
 | `bin/iso-firewall` | **Host-side reconcile** — resolves the allowlist and applies it |
 | `bin/iso-claude` | Launch a Claude session in the sandbox |
 | `bin/iso-agent` (`iso-pi`, `iso-codex`) | Launch pi or Codex in the sandbox; see **Other agents** |
@@ -172,17 +173,12 @@ iso-shell                       # interactive shell in the jail
 Both wrappers bring the container up, populate the allowlist if empty, and drop
 you in as your own UID.
 
-**Unattended ("YOLO") mode.** To skip permission prompts, pass
-`--dangerously-skip-permissions` (it rides through the wrapper's `"$@"`):
-
-```bash
-iso-claude --dangerously-skip-permissions
-```
-
-To make it the default, uncomment the YOLO `exec` line in `bin/iso-claude`
-(and comment the default one). This is only defensible because egress is
+**Unattended ("YOLO") mode is the default.** `bin/iso-claude` runs Claude with
+`--dangerously-skip-permissions` (no permission prompts); drop the flag in its
+`exec` line for prompts. This is only defensible because egress is
 allowlist-locked and the session is contained — see [Goal](#goal) and
-[Caveats](#caveats). Don't point it at adversarial content.
+[Caveats](#caveats). Don't point it at adversarial content. pi never asks for
+approval anyway; Codex runs with `danger-full-access` (below).
 
 **Other agents: pi and Codex.** The image also carries pi and the Codex CLI.
 `iso-pi` and `iso-codex` (links to `bin/iso-agent`; `iso-agent <pi|codex|claude>`
@@ -191,10 +187,14 @@ works too) start them like `iso-claude`: same container, Bedrock through the
 `~/.config/iso-claude/settings.json` env block), argv[0] named after the agent
 so herdr detects it, no herdr socket inside. Each gets a sandbox-only config
 dir in the workspace, never the host's: `state/iso-pi` (`PI_CODING_AGENT_DIR`)
-and `state/iso-codex` (`CODEX_HOME`), seeded on first use from
-`config/dotfiles/{pi/iso-pi/settings.json,codex/iso-codex/config.toml}`. pi
+and `state/iso-codex` (`CODEX_HOME`). On every launch `iso-merge-config` (in the
+image) merges `config/dotfiles/pi/iso-pi/settings.json` /
+`config/dotfiles/codex/iso-codex/config.toml` over the agent's file (those keys
+win; tables merge key by key; the agent's other keys stay) and fills missing
+keys from `defaults.json` / `defaults.toml` there (the first-run model, so
+`/model` survives). pi
 loads `config/pi-nav` from the read-only mount on every launch (`-e`; pi-atc
-stays out of the sandbox for now); pi-vimmode is an npm package in the seeded settings, installed
+stays out of the sandbox for now); pi-vimmode is an npm package in the pi defaults, installed
 into `state/iso-pi/npm`. Codex uses its built-in `amazon-bedrock` provider
 (`bedrock-mantle.us-east-1.api.aws`) and runs without its own bubblewrap
 sandbox, which cannot start in the container.

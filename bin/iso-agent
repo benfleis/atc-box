@@ -8,10 +8,11 @@
 # ~/.codex the host's Codex auth and config):
 #   pi     PI_CODING_AGENT_DIR = $ISO_PI_STATE_DIR    (default state/iso-pi)
 #   codex  CODEX_HOME          = $ISO_CODEX_STATE_DIR (default state/iso-codex)
-# Host sessions never read these dirs: the sandbox can write them. On first use
-# the config is seeded (copied, inside the container) from the read-only
-# config/dotfiles/{pi/iso-pi/settings.json,codex/iso-codex/config.toml}; after
-# that it is the sandbox's own file.
+# Host sessions never read these dirs: the sandbox can write them. On every
+# launch, inside the container, iso-merge-config (in the image) merges the
+# read-only dotfiles into the agent's file (config/dotfiles/pi/iso-pi,
+# config/dotfiles/codex/iso-codex): the enforced file wins on its keys, the
+# defaults file fills only missing keys, the agent's other keys are kept.
 #
 # Models: Bedrock through the AWS profile iso-aws-refresh keeps fresh
 # ($CLAUDE_STATE_DIR/aws). The AWS_* (and TZ) values come from the env block of
@@ -80,16 +81,20 @@ case "$agent" in
 pi)
   # pi.dev (version check, telemetry) is not allowlisted; don't wait on it.
   env_args+=(-e "PI_CODING_AGENT_DIR=$cstate" -e PI_SKIP_VERSION_CHECK=1 -e PI_TELEMETRY=0)
-  seed=$seed_dir/pi/iso-pi/settings.json
+  fmt=json
+  enforced=$seed_dir/pi/iso-pi/settings.json
+  defaults=$seed_dir/pi/iso-pi/defaults.json
   dst=$cstate/settings.json
   # pi-nav from the read-only config mount on every launch (pi-vimmode is an
-  # npm package in the seeded settings, installed into the sandbox agent dir).
+  # npm package in the pi defaults (dotfiles), installed into the sandbox agent dir).
   # pi-atc stays out of the sandbox for now (owner, 2026-10-27).
   cmd=(pi -e /opt/workspace/config/pi-nav)
   ;;
 codex)
   env_args+=(-e "CODEX_HOME=$cstate")
-  seed=$seed_dir/codex/iso-codex/config.toml
+  fmt=toml
+  enforced=$seed_dir/codex/iso-codex/config.toml
+  defaults=$seed_dir/codex/iso-codex/defaults.toml
   dst=$cstate/config.toml
   cmd=(codex)
   ;;
@@ -105,4 +110,5 @@ tty_args=()
 exec -a "$agent" bash -c 'docker "$@"; exit $?' "$agent" \
   compose -f "$COMPOSE_DIR/docker-compose.yaml" \
   exec --user "$(id -u):$(id -g)" "${tty_args[@]}" "${env_args[@]}" "$SERVICE" \
-  bash -c '[ -e "$2" ] || cp "$1" "$2"; shift 2; exec "$@"' seed "$seed" "$dst" "${cmd[@]}" "$@"
+  bash -c 'iso-merge-config "$1" "$2" "$3" "$4" || exit 1; shift 4; exec "$@"' merge \
+  "$fmt" "$dst" "$defaults" "$enforced" "${cmd[@]}" "$@"
