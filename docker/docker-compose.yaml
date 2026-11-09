@@ -33,7 +33,7 @@ services:
       - "${CLAUDE_WORK_DIR:-/opt/workspace}:/opt/workspace"
       # Shared toolchains (rust, uv, go, sccache): one root-owned copy for host and
       # guest at the identical path, read-only here so a session can't alter
-      # binaries the host runs (tooling/README.md). Long form on purpose: on this
+      # binaries the host runs (../TOOLING.md). Long form on purpose: on this
       # Docker the short "/opt/tooling:/opt/tooling:ro" mounts nothing when source
       # and target paths match.
       - type: bind

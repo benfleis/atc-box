@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# lock.sh — regenerate mise.lock after editing mise.toml (README.md). Runs as any
+# lock.sh — regenerate mise.lock after editing mise.toml (TOOLING.md). Runs as any
 # user with the mise install.sh installed; only this directory's mise.lock changes.
 # Extra args go to `mise lock` (e.g. --bump uv).
 set -euo pipefail

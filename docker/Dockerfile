@@ -89,7 +89,7 @@ RUN mkdir -p /etc/apt/keyrings \
 # rather than ship either.
 
 # Rust, uv, go and sccache are NOT installed here: they come from /opt/tooling,
-# one root-owned copy shared with the host and mounted read-only (tooling/README.md).
+# one root-owned copy shared with the host and mounted read-only (../TOOLING.md).
 
 # iso-claude's uid/gid must match the HOST user: sessions exec as
 # `--user $(id -u):$(id -g)` (bin/), and /opt/workspace is bind-mounted with the

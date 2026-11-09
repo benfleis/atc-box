@@ -98,11 +98,11 @@ iso_ensure_running() {
   mkdir -p "$CLAUDE_STATE_DIR"
   chmod 700 "$CLAUDE_STATE_DIR"
 
-  # The shared toolchains are bind-mounted read-only (tooling/README.md);
+  # The shared toolchains are bind-mounted read-only (../TOOLING.md);
   # without them the container has no rust, uv, go or sccache. Checked before
   # `up`, so a missing install can't lead to a recreate.
   if [ ! -d /opt/tooling/bin ]; then
-    echo "$name: /opt/tooling is not installed; run: sudo $COMPOSE_DIR/tooling/install.sh" >&2
+    echo "$name: /opt/tooling is not installed; run: sudo $COMPOSE_DIR/../install.sh" >&2
     exit 1
   fi
 

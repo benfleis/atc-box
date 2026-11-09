@@ -2,7 +2,7 @@
 # iso-claude — run claude inside the standing sandbox container.
 set -euo pipefail
 
-COMPOSE_DIR="${ISO_COMPOSE_DIR:-/opt/workspace/src/iso-claude}" # where your docker-compose.yaml lives (ISO_COMPOSE_DIR: a worktree, for tests)
+COMPOSE_DIR="${ISO_COMPOSE_DIR:-/opt/workspace/config/atc-box/docker}" # where your docker-compose.yaml lives (ISO_COMPOSE_DIR: a worktree, for tests)
 source "$COMPOSE_DIR/bin/iso-common.sh"
 
 iso_prepare_env "iso-claude"

@@ -1,0 +1,24 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "InvokeViaEuAnthropicProfiles",
+      "Effect": "Allow",
+      "Action": ["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream", "bedrock:CountTokens"],
+      "Resource": "arn:aws:bedrock:eu-west-1:655495220320:inference-profile/eu.anthropic.*"
+    },
+    {
+      "Sid": "FoundationModelsBehindThoseProfiles",
+      "Effect": "Allow",
+      "Action": ["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream", "bedrock:CountTokens"],
+      "Resource": "arn:aws:bedrock:eu-*::foundation-model/anthropic.*",
+      "Condition": {"ArnLike": {"bedrock:InferenceProfileArn": "arn:aws:bedrock:eu-west-1:655495220320:inference-profile/eu.anthropic.*"}}
+    },
+    {
+      "Sid": "ReadModelCatalog",
+      "Effect": "Allow",
+      "Action": ["bedrock:ListInferenceProfiles", "bedrock:GetInferenceProfile", "bedrock:ListFoundationModels", "bedrock:GetFoundationModel"],
+      "Resource": "*"
+    }
+  ]
+}

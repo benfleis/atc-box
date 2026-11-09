@@ -1,0 +1,26 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "InvokeAnyModelOrProfile",
+      "Effect": "Allow",
+      "Action": ["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream", "bedrock:CountTokens"],
+      "Resource": [
+        "arn:aws:bedrock:*:655495220320:inference-profile/*",
+        "arn:aws:bedrock:*::foundation-model/*"
+      ]
+    },
+    {
+      "Sid": "MantleOpenAICompatible",
+      "Effect": "Allow",
+      "Action": "bedrock-mantle:*",
+      "Resource": "*"
+    },
+    {
+      "Sid": "ReadModelCatalog",
+      "Effect": "Allow",
+      "Action": ["bedrock:ListInferenceProfiles", "bedrock:GetInferenceProfile", "bedrock:ListFoundationModels", "bedrock:GetFoundationModel"],
+      "Resource": "*"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Sid": "DenyUnlessFromBox1",
+    "Effect": "Deny",
+    "Action": "*",
+    "Resource": "*",
+    "Condition": {
+      "NotIpAddress": {"aws:SourceIp": "__EIP__/32"},
+      "BoolIfExists": {"aws:ViaAWSService": "false", "aws:PrincipalIsAWSService": "false"}
+    }
+  }]
+}

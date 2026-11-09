@@ -1,4 +1,4 @@
-# env.sh — environment for the shared toolchains (README.md). POSIX sh. Source it
+# env.sh — environment for the shared toolchains (TOOLING.md). POSIX sh. Source it
 # from the host's shell startup and the container's ~/.zshenv, and nothing else:
 #   . /opt/tooling/env.sh
 # Preset either root to point elsewhere (e.g. a TOOLING_PREFIX test install);

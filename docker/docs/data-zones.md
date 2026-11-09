@@ -35,13 +35,13 @@ shared.
 ## Tooling
 
 `/opt/tooling` holds the toolchains apt can't supply at the right version, installed once per box
-by `tooling/install.sh` from a pinned `mise.toml` + `mise.lock` (`tooling/README.md`).
+by `install.sh` (repo root) from a pinned `mise.toml` + `mise.lock` (`TOOLING.md`).
 
 - **Both sides run the same bytes.** Same Ubuntu, same paths: sccache keys, cargo targets and venvs
   built on one side work on the other.
 - **Root-owned, read-only to the guest.** Both sides execute these binaries, so no session, in the
   guest or as the host user, may change them; `rustup` or `uv self update` fail loudly instead of
-  drifting from the lock. Updates go through `sudo tooling/install.sh`.
+  drifting from the lock. Updates go through `sudo /opt/workspace/config/atc-box/install.sh`.
 - **One env source.** `/opt/tooling/env.sh` sets `TOOLING_ROOT`, `WORKSPACE_ROOT`, `PATH` and each
   tool's homes. The host's shell startup and the guest's `~/.zshenv` both source it, so the two
   can't diverge.

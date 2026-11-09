@@ -1,0 +1,68 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "InvokeViaEuAnthropicProfiles",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock:InvokeModel",
+        "bedrock:InvokeModelWithResponseStream"
+      ],
+      "Resource": "arn:aws:bedrock:eu-west-1:655495220320:inference-profile/eu.anthropic.*"
+    },
+    {
+      "Sid": "FoundationModelsBehindThoseProfiles",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock:InvokeModel",
+        "bedrock:InvokeModelWithResponseStream"
+      ],
+      "Resource": "arn:aws:bedrock:eu-*::foundation-model/anthropic.*",
+      "Condition": {
+        "ArnLike": {
+          "bedrock:InferenceProfileArn": "arn:aws:bedrock:eu-west-1:655495220320:inference-profile/eu.anthropic.*"
+        }
+      }
+    },
+    {
+      "Sid": "CountTokensOnEuAnthropicModels",
+      "Effect": "Allow",
+      "Action": "bedrock:CountTokens",
+      "Resource": "arn:aws:bedrock:eu-*::foundation-model/anthropic.*"
+    },
+    {
+      "Sid": "ReadModelCatalog",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock:ListInferenceProfiles",
+        "bedrock:GetInferenceProfile",
+        "bedrock:ListFoundationModels",
+        "bedrock:GetFoundationModel"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "InvokeViaGlobalProfiles",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock:InvokeModel",
+        "bedrock:InvokeModelWithResponseStream"
+      ],
+      "Resource": "arn:aws:bedrock:eu-west-1:655495220320:inference-profile/global.*"
+    },
+    {
+      "Sid": "FoundationModelsBehindGlobalProfiles",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock:InvokeModel",
+        "bedrock:InvokeModelWithResponseStream"
+      ],
+      "Resource": "arn:aws:bedrock:*::foundation-model/*",
+      "Condition": {
+        "ArnLike": {
+          "bedrock:InferenceProfileArn": "arn:aws:bedrock:eu-west-1:655495220320:inference-profile/global.*"
+        }
+      }
+    }
+  ]
+}

@@ -95,7 +95,7 @@ Claude Code) resolve normally. What must persist is decoupled from `HOME`:
   survives rebuilds.
 - **Toolchains apt can't supply at the right version** (rust, uv, go, sccache)
   are one shared, root-owned copy in `/opt/tooling`, mounted read-only, with one
-  env file both sides source; see [tooling/README.md](tooling/README.md).
+  env file both sides source; see [TOOLING.md](../TOOLING.md).
 - **Your personal shell config** lives in the bind-mounted workspace as
   `/opt/workspace/config/zsh/env-local.zsh` and `/opt/workspace/config/zsh/rc-local.zsh`,
   sourced by the baked dotfiles if present — persistent and host-editable

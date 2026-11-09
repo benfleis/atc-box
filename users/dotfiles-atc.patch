@@ -1,0 +1,26 @@
+diff -ru a/config/zsh/prompts.zsh b/config/zsh/prompts.zsh
+--- a/config/zsh/prompts.zsh	2026-11-09 14:42:03.671047874 +0000
++++ b/config/zsh/prompts.zsh	2026-11-09 14:42:03.681047924 +0000
+@@ -5,6 +5,9 @@
+ 
+ local user_at_host='%F{#FFC000}%n%F{#FF7F50}@%m%f'
+ local host='%F{#CCB040}@%m%f'
++# atc-box: the flight account and the admin account must look different at a glance
++[[ $USERNAME = atc ]] && user_at_host='%K{#003040}%F{#00D0FF} atc %k%F{#FF7F50}@%m%f'
++[[ $USERNAME = bfleis && $HOST = atc-box* ]] && user_at_host='%K{#401000}%F{#FFC000} ADMIN %k%F{#FF7F50}@%m%f'
+ #local host='%F{#999999}b@%m%f'
+ [[ $USERNAME = $IAM ]] && {
+   local acct="$host"
+diff -ru a/config/zsh/.zshrc b/config/zsh/.zshrc
+--- a/config/zsh/.zshrc	2026-11-09 14:42:03.671047874 +0000
++++ b/config/zsh/.zshrc	2026-11-09 14:42:03.681047924 +0000
+@@ -36,7 +36,8 @@
+ # TODO: figure this out
+ fpath=( "$XDG_DATA_HOME/zsh/completions" "${ZDOTDIR}/completions" "${ZDOTDIR}/functions" "${fpath[@]}" )
+ autoload -Uz compinit
+-compinit
++# atc-box: config/ belongs to bfleis and is read-only for atc, so compaudit flags it; trust it there
++[[ $USERNAME = atc ]] && compinit -u || compinit
+ # TODO check .zcompdump?
+ # autoload -Uz "${ZDOTDIR}/functions/"**
+ # functions.zsh

@@ -159,7 +159,7 @@ would kill the authoring session. Syntax is as-correct-as-checkable without
 
 Pickup checklist:
 
-1. `cd /opt/workspace/src/iso-claude`
+1. `cd /opt/workspace/config/atc-box/docker`
 2. Confirm the bridge gateway matches the systemd unit's `--bind`:
    `docker network inspect iso-claude_default -f '{{(index .IPAM.Config 0).Gateway}}'`
    (was `172.18.0.1`). Fix `contrib/iso-sniproxy.service` if different.

@@ -1,5 +1,5 @@
 # uv: its Python lives here, installed by install.sh and read-only to both sides, so a venv
-# built on either side finds its interpreter on the other (README.md). Shared tools come from
+# built on either side finds its interpreter on the other (TOOLING.md). Shared tools come from
 # install.sh (uv-tools.txt), not UV_TOOL_DIR: uv locks that dir on every tool command, even uvx.
 # A read-only mount fails the lock.
 export UV_CACHE_DIR="$WORKSPACE_ROOT/cache/uv"

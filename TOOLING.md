@@ -1,10 +1,10 @@
 # /opt/tooling
 
-Shared toolchains for the host and the iso-claude container: **one copy, run by both**, so host
-and guest use byte-identical binaries. That's what makes sccache keys, cargo target dirs, venvs and
+Shared toolchains for every user on an atc box (and for the iso container in `docker/`): **one copy, run by
+all**, so they use byte-identical binaries. That's what makes sccache keys, cargo target dirs, venvs and
 build behaviour match across the two, by construction rather than by keeping two installs in step.
 
-This directory in the iso-claude repo is the source; `install.sh` puts it in `/opt/tooling`.
+The root of the atc-box repo is the source; `install.sh` puts it in `/opt/tooling`.
 
 ## The approach
 
@@ -35,11 +35,11 @@ Where this sits among the other zones: `docs/data-zones.md`.
 
 ```
 /opt/tooling/
-  README.md
+  TOOLING.md
   env.sh        source this, host and container; sets the roots and PATH, then env/*.sh
   env/          one file per tool: rust.sh, go.sh, uv.sh, sccache.sh
   bin/          the one PATH entry: links to every tool binary and rustup proxy, plus
-                our scripts from tooling/bin/ (git-objects)
+                our scripts from bin/ (git-objects)
   config/       clang.cfg, the compiler config bin/clang and bin/clang++ use
   mise.toml     pinned versions
   mise.lock     resolved artifacts and their checksums
@@ -130,7 +130,7 @@ the repo it builds. New submodules borrow at init:
 On the host, as root:
 
 ```sh
-sudo tooling/install.sh
+sudo /opt/workspace/config/atc-box/install.sh
 ```
 
 It installs mise itself (pinned, checksum-verified, off `PATH`), copies this directory's config
@@ -138,7 +138,7 @@ and env files into place, runs `mise install` in locked mode (every artifact ver
 `mise.lock`; rustup verifies its own downloads), relinks `bin/`, and checks each tool through
 `env.sh`. Re-running it is safe.
 
-To add or bump a tool: edit `mise.toml`, run `tooling/lock.sh` (any user; it rewrites only
+To add or bump a tool: edit `mise.toml`, run `./lock.sh` (any user; it rewrites only
 `mise.lock`, using the pinned mise from `/opt/tooling`), commit both, then
-`sudo tooling/install.sh`. Every executable a tool ships is linked into `bin/` automatically. To
-try an install without root: `TOOLING_PREFIX=<dir> tooling/install.sh`.
+`sudo /opt/workspace/config/atc-box/install.sh`. Every executable a tool ships is linked into `bin/` automatically. To
+try an install without root: `TOOLING_PREFIX=<dir> ./install.sh`.

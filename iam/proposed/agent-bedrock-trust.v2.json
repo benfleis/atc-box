@@ -1,0 +1,9 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": {"AWS": "arn:aws:iam::655495220320:role/atc-box"},
+    "Action": "sts:AssumeRole",
+    "Condition": {"IpAddress": {"aws:SourceIp": "__EIP__/32"}}
+  }]
+}
