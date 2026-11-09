@@ -146,6 +146,10 @@ checksum = "sha256:238136f1df197ecd89bafd728a34d0642176f3170423d13d8276746d675a9
 url = "https://conda.anaconda.org/conda-forge/linux-aarch64/perl-5.32.1-10_h5bc82ec_perl5.conda"
 checksum = "sha256:f99a23ad19224503e8e50054cdc9c0cb4813417ecbaddb39cfcb6a7327f38eac"
 
+[conda-packages.linux-arm64."readline-8.3-ha7194a6_1"]
+url = "https://conda.anaconda.org/conda-forge/linux-aarch64/readline-8.3-ha7194a6_1.conda"
+checksum = "sha256:80167dcf73a96b6d0c1bb2298d7b8b9bc21b27cc5bf56979f9c548b49a4d1722"
+
 [conda-packages.linux-arm64."sysroot_linux-aarch64-2.34-h96c1060_3"]
 url = "https://conda.anaconda.org/conda-forge/noarch/sysroot_linux-aarch64-2.34-h96c1060_3.conda"
 checksum = "sha256:5a7bd6d0e34aa517aef68f902659f65090c7a022cb194114cca858efa6faacd0"
@@ -433,6 +437,10 @@ checksum = "sha256:9c1533f1cf784f0e250919c0c9762d0b0e6bc727a79290ffb7cea1ceca1d0
 [conda-packages.linux-x64."perl-5.32.1-10_h7cc23a3_perl5"]
 url = "https://conda.anaconda.org/conda-forge/linux-64/perl-5.32.1-10_h7cc23a3_perl5.conda"
 checksum = "sha256:6ab2c89273347c20144c20691f98c3721e930af38e801ec16c737d2e24406010"
+
+[conda-packages.linux-x64."readline-8.3-hd6e31c0_1"]
+url = "https://conda.anaconda.org/conda-forge/linux-64/readline-8.3-hd6e31c0_1.conda"
+checksum = "sha256:01b3fe073a66e321970d09e04b388708f8cbdca5cdfbfcb7c9eeb470ad10383d"
 
 [conda-packages.linux-x64."sysroot_linux-64-2.34-h087de78_3"]
 url = "https://conda.anaconda.org/conda-forge/noarch/sysroot_linux-64-2.34-h087de78_3.conda"
@@ -1421,6 +1429,36 @@ conda_deps = [
     "icu-78.3-h5112557_2",
     "libiconv-1.18-hc1393d2_3",
     "liblzma-5.8.3-hfd05255_1",
+]
+
+[[tools."conda:lua"]]
+version = "5.5.0"
+backend = "conda:lua"
+specifiers = ["5.5.0"]
+
+[tools."conda:lua".options]
+channel = "conda-forge"
+
+[tools."conda:lua"."platforms.linux-arm64"]
+checksum = "sha256:bbf48da83e4bc5edb234a78b9f38870198ceed8bba4c8c21874e9b13c7bbb6e6"
+url = "https://conda.anaconda.org/conda-forge/linux-aarch64/lua-5.5.0-hc68926f_0.conda"
+conda_deps = [
+    "readline-8.3-ha7194a6_1",
+    "ncurses-6.6-h2b6f883_1",
+    "libgcc-16.2.0-h205dda4_7",
+    "_openmp_mutex-4.5-20_gnu",
+    "libgomp-16.2.0-h8acb6b2_7",
+]
+
+[tools."conda:lua"."platforms.linux-x64"]
+checksum = "sha256:dcf9f670f00f31fe52f553d00cd4745e0d716737b475ea2d39318ae8c704ba50"
+url = "https://conda.anaconda.org/conda-forge/linux-64/lua-5.5.0-h76c996d_0.conda"
+conda_deps = [
+    "readline-8.3-hd6e31c0_1",
+    "ncurses-6.6-hdb14827_1",
+    "libgcc-16.2.0-ha9f2e26_7",
+    "_openmp_mutex-4.5-20_gnu",
+    "libgomp-16.2.0-he0feb66_7",
 ]
 
 [[tools.docker-cli]]

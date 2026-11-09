@@ -18,7 +18,8 @@ sudo /opt/workspace/config/atc-box/install.sh     # as root; /opt/tooling must n
 ```
 
 Edit `mise.toml`, run `./lock.sh` (any user; Linux platforms only, see `lockfile_platforms`), then the line
-above. Not in mise: `lua` (`dnf install lua`; lua.org does not answer from AWS), `azure-cli` (left out for now).
+above. `lua` is `conda:lua` (prebuilt; mise's default lua compiles from lua.org, which does not answer from AWS).
+Not in mise: `azure-cli` (left out for now).
 
 ## Where it lives
 
