@@ -3,7 +3,7 @@
 # from IMDS by every process on the box). Same uid/gid as OLD, so rsync --numeric-ids carries ownership.
 set -euxo pipefail
 hostnamectl set-hostname atc-box-1
-dnf install -y git zsh tmux rsync jq zstd docker gcc gcc-c++ make cmake ninja-build openssl-devel perl python3
+dnf install -y git zsh tmux rsync jq lua glibc-langpack-en zstd docker gcc gcc-c++ make cmake ninja-build openssl-devel perl python3
 # AL2023 has no mosh package (mosh-server comes from bfleis's mise, as on OLD) and ships rrsync only as a doc file.
 install -m 755 /usr/share/doc/rsync/support/rrsync /usr/local/bin/rrsync
 groupadd -g 10100 amazon
