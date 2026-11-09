@@ -17,7 +17,7 @@ shared.
 
 ## Host-private
 
-- **Credentials are ferried, not stored.** Tokens (`CLAUDE_CODE_OAUTH_TOKEN`, `GH_TOKEN`) live
+- **Credentials are ferried, not stored.** Tokens (`CLAUDE_CODE_OAUTH_TOKEN`, `GITHUB_TOKEN`) live
   host-side in the 0600 secrets file and reach a session per exec via `-e`, never via
   `docker-compose.yaml`. A ferried token is still readable inside that session (it's in the process
   env); the point is that the guest can't persist or enumerate anything you didn't hand it. Scope

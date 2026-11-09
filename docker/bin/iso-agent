@@ -73,7 +73,9 @@ if [[ -r "$iso_local" ]]; then
   done < <(jq -r '.env // {} | to_entries[] | select(.key | test("^(AWS_[A-Z_]+|TZ)$"))
                   | "\(.key)=\(.value)"' "$iso_local")
 fi
-# GH_TOKEN rides along when set, so `gh` is authenticated inside the sandbox.
+# GITHUB_TOKEN rides along when set, so `gh` (and mise) are authenticated inside the sandbox;
+# GH_TOKEN too while old env files still use that name.
+if [[ -n "${GITHUB_TOKEN:-}" ]]; then env_args+=(-e GITHUB_TOKEN); fi
 if [[ -n "${GH_TOKEN:-}" ]]; then env_args+=(-e GH_TOKEN); fi
 
 seed_dir=/opt/workspace/config/dotfiles

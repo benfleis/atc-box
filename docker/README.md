@@ -135,7 +135,7 @@ cp .env-example ~/.config/iso-claude/.env   # set CLAUDE_WORK_DIR, ISO_UID etc.
 iso-compose build
 
 # Optional, token mode instead of /login (see below): mint a token and stash it
-# in the launcher's secrets file (0600). GH_TOKEN=… for `gh` goes here too.
+# in the launcher's secrets file (0600). GITHUB_TOKEN=… for `gh` goes here too.
 claude setup-token              # on the host, or any machine with Claude Code
 mkdir -p -m 700 ~/.local/state/iso-claude-launcher
 {

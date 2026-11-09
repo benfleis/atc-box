@@ -61,7 +61,7 @@ iso_load_settings() {
 # Also loads the settings (iso_load_settings above), then the secrets file,
 # optional, which wins:
 #   ~/.local/state/iso-claude-launcher/.env  secrets (CLAUDE_CODE_OAUTH_TOKEN,
-#                                            GH_TOKEN); keep it 0600
+#                                            GITHUB_TOKEN); keep it 0600
 # Secrets are exported for the wrappers' `-e VAR` passthrough only; nothing in
 # docker-compose.yaml reads them. Keep the secrets file outside CLAUDE_WORK_DIR:
 # the container mounts all of that.

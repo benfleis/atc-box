@@ -33,7 +33,9 @@ if [[ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]]; then
     echo "iso-claude: moved a stored /login credential aside; using CLAUDE_CODE_OAUTH_TOKEN (unset it to use /login instead)" >&2
   fi
 fi
-# GH_TOKEN rides along when set, so `gh` is authenticated inside the sandbox.
+# GITHUB_TOKEN rides along when set, so `gh` (and mise) are authenticated inside the sandbox;
+# GH_TOKEN too while old env files still use that name.
+[[ -n "${GITHUB_TOKEN:-}" ]] && env_args+=(-e GITHUB_TOKEN)
 [[ -n "${GH_TOKEN:-}" ]] && env_args+=(-e GH_TOKEN)
 
 # Settings layered over the shared settings.json: the iso overlay (Bedrock/AWS env)
