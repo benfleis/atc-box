@@ -1461,6 +1461,32 @@ conda_deps = [
     "libgomp-16.2.0-he0feb66_7",
 ]
 
+[[tools."conda:tree-sitter-cli"]]
+version = "0.27.1"
+backend = "conda:tree-sitter-cli"
+specifiers = ["0.27.1"]
+
+[tools."conda:tree-sitter-cli".options]
+channel = "conda-forge"
+
+[tools."conda:tree-sitter-cli"."platforms.linux-arm64"]
+checksum = "sha256:22bd563f0a854592fed1053f3015fe25445158dc6f8a8fe2268c55747e5872d9"
+url = "https://conda.anaconda.org/conda-forge/linux-aarch64/tree-sitter-cli-0.27.1-h4f14f73_0.conda"
+conda_deps = [
+    "libgcc-16.2.0-h205dda4_7",
+    "_openmp_mutex-4.5-20_gnu",
+    "libgomp-16.2.0-h8acb6b2_7",
+]
+
+[tools."conda:tree-sitter-cli"."platforms.linux-x64"]
+checksum = "sha256:dd98cca00f70c120ed431c1a036888a6d07cb9f45ea32cf37bcd6ee0623db912"
+url = "https://conda.anaconda.org/conda-forge/linux-64/tree-sitter-cli-0.27.1-hc7555a6_0.conda"
+conda_deps = [
+    "libgcc-16.2.0-ha9f2e26_7",
+    "_openmp_mutex-4.5-20_gnu",
+    "libgomp-16.2.0-he0feb66_7",
+]
+
 [[tools.docker-cli]]
 version = "29.9.0"
 backend = "aqua:docker/cli"
@@ -2131,53 +2157,6 @@ url_api = "https://api.github.com/repos/tmux/tmux-builds/releases/assets/5287348
 checksum = "sha256:cc56bd1cc873eb6089c615f0496b072385bda8a6d944069f38564a5d49c128aa"
 url = "https://github.com/tmux/tmux-builds/releases/download/v3.7c/tmux-3.7c-linux-x86_64.tar.gz"
 url_api = "https://api.github.com/repos/tmux/tmux-builds/releases/assets/528734864"
-
-[[tools.tree-sitter]]
-version = "0.27.1"
-backend = "aqua:tree-sitter/tree-sitter"
-specifiers = ["0.27.1"]
-
-[tools.tree-sitter."platforms.linux-arm64"]
-checksum = "sha256:404be5d54a4955571c4067c21d4699660eab3a534cefb0659341b207f7139ec5"
-url = "https://github.com/tree-sitter/tree-sitter/releases/download/v0.27.1/tree-sitter-linux-arm64.gz"
-url_api = "https://api.github.com/repos/tree-sitter/tree-sitter/releases/assets/622546797"
-provenance = "github-attestations"
-
-[tools.tree-sitter."platforms.linux-arm64-musl"]
-checksum = "sha256:404be5d54a4955571c4067c21d4699660eab3a534cefb0659341b207f7139ec5"
-url = "https://github.com/tree-sitter/tree-sitter/releases/download/v0.27.1/tree-sitter-linux-arm64.gz"
-url_api = "https://api.github.com/repos/tree-sitter/tree-sitter/releases/assets/622546797"
-provenance = "github-attestations"
-
-[tools.tree-sitter."platforms.linux-x64"]
-checksum = "sha256:d01042f94ba3d6827ddc9788e235f75d8366431be42bdf90ade534d960c98b7d"
-url = "https://github.com/tree-sitter/tree-sitter/releases/download/v0.27.1/tree-sitter-linux-x64.gz"
-url_api = "https://api.github.com/repos/tree-sitter/tree-sitter/releases/assets/622546800"
-provenance = "github-attestations"
-
-[tools.tree-sitter."platforms.linux-x64-musl"]
-checksum = "sha256:d01042f94ba3d6827ddc9788e235f75d8366431be42bdf90ade534d960c98b7d"
-url = "https://github.com/tree-sitter/tree-sitter/releases/download/v0.27.1/tree-sitter-linux-x64.gz"
-url_api = "https://api.github.com/repos/tree-sitter/tree-sitter/releases/assets/622546800"
-provenance = "github-attestations"
-
-[tools.tree-sitter."platforms.macos-arm64"]
-checksum = "sha256:46cb97d9a2c52c94e22d9a76c2f1116156b8b61f98360e2a9cce05fcb197cd4d"
-url = "https://github.com/tree-sitter/tree-sitter/releases/download/v0.27.1/tree-sitter-macos-arm64.gz"
-url_api = "https://api.github.com/repos/tree-sitter/tree-sitter/releases/assets/622546827"
-provenance = "github-attestations"
-
-[tools.tree-sitter."platforms.macos-x64"]
-checksum = "sha256:b740262cb0f35be64e39b50ad68b020433924a7bcee5ae5c8e40e68d71215647"
-url = "https://github.com/tree-sitter/tree-sitter/releases/download/v0.27.1/tree-sitter-macos-x64.gz"
-url_api = "https://api.github.com/repos/tree-sitter/tree-sitter/releases/assets/622546842"
-provenance = "github-attestations"
-
-[tools.tree-sitter."platforms.windows-x64"]
-checksum = "sha256:e21184878f908f91c753b78a76a0766e61954e06627b46088d70d66233424531"
-url = "https://github.com/tree-sitter/tree-sitter/releases/download/v0.27.1/tree-sitter-windows-x64.gz"
-url_api = "https://api.github.com/repos/tree-sitter/tree-sitter/releases/assets/622546839"
-provenance = "github-attestations"
 
 [[tools.uv]]
 version = "0.13.1"
