@@ -14,6 +14,10 @@ if [[ -z ${TOOLING_PREFIX:-} && $(id -u) -ne 0 ]]; then
     echo "install.sh: run as root (sudo): /opt/tooling must not be writable by the user" >&2
     exit 1
 fi
+if [[ $(uname -s) != Linux ]]; then
+    echo "install.sh: Linux boxes only; on your own machine use $(dirname "$0")/install-user.sh" >&2
+    exit 1
+fi
 case $(uname -m) in
     x86_64) arch=x64 ;;
     aarch64) arch=arm64 ;;

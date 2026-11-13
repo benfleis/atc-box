@@ -127,18 +127,44 @@ the repo it builds. New submodules borrow at init:
 
 ## Install and update
 
-On the host, as root:
+One `mise.toml` + `mise.lock` for every machine; two ways to install it.
+
+**An atc box (Linux), as root**, into the shared, root-owned `/opt/tooling`:
 
 ```sh
-sudo /opt/workspace/config/atc-box/install.sh
+cd /opt/workspace/config/atc-box && git pull --ff-only origin atc-box && sudo ./install.sh
 ```
 
-It installs mise itself (pinned, checksum-verified, off `PATH`), copies this directory's config
-and env files into place, runs `mise install` in locked mode (every artifact verified against
-`mise.lock`; rustup verifies its own downloads), relinks `bin/`, and checks each tool through
-`env.sh`. Re-running it is safe.
+It installs mise itself (pinned `MISE_VERSION`, checksum-verified, off `PATH`: root never runs a
+user-writable mise), copies this directory's config and env files into place, runs `mise install` in locked
+mode (every artifact verified against `mise.lock`; rustup verifies its own downloads), relinks `bin/`, and
+checks each tool through `env.sh`. Re-running it is safe. To try it without root: `TOOLING_PREFIX=<dir> ./install.sh`.
 
-To add or bump a tool: edit `mise.toml`, run `./lock.sh` (any user; it rewrites only
-`mise.lock`, using the pinned mise from `/opt/tooling`), commit both, then
-`sudo /opt/workspace/config/atc-box/install.sh`. Every executable a tool ships is linked into `bin/` automatically. To
-try an install without root: `TOOLING_PREFIX=<dir> ./install.sh`.
+**Your own machine (the Mac), as yourself**, with your own mise:
+
+```sh
+# once, in your shell startup (e.g. ~/.local/state/zsh/env-local.zsh), then a new shell:
+export MISE_GLOBAL_CONFIG_FILE=$HOME/src/atc-box/mise.toml
+cd ~/src/atc-box && ./install-user.sh
+```
+
+mise then treats this repo's `mise.toml` as your global config and uses the `mise.lock` next to it.
+`~/.config/mise/config.toml` is no longer read; personal settings go in the environment instead (e.g.
+`export MISE_SHIMS_DIR=~/.local/bin`: mise ignores `shims_dir` from `conf.d`). No tools in `~/.config/mise/conf.d`: they have no lock entry, and a locked install then fails as a whole.
+A tool for one machine goes into `mise.toml` with `os = ["macos"]` (or `["linux"]`), and so into the lock. Tools marked `os = ["linux"]` (the conda clang,
+mold) are skipped on macOS.
+
+**Add or bump a tool** (where you can commit: the Mac):
+
+```sh
+cd ~/src/atc-box
+mise use -g conda:pkg-config@0.29.2       # edits this repo's mise.toml (MISE_GLOBAL_CONFIG_FILE)
+MISE_GITHUB_TOKEN=… ./lock.sh              # every platform in lockfile_platforms; only mise.lock changes
+./install-user.sh                          # try it here
+git commit -am 'feat(tooling): …' && git push origin refs/heads/atc-box:refs/heads/atc-box
+```
+
+Then on each box: the `git pull --ff-only` + `sudo ./install.sh` line above. `lock.sh` warns when your mise
+differs from the boxes' `MISE_VERSION`: bump `MISE_VERSION` in `install.sh` in the same commit when you lock
+with a newer mise, so the boxes can read the lock. Every executable a tool ships is linked into the boxes'
+`bin/` automatically.
