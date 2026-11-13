@@ -126,7 +126,7 @@ done
 (
     TOOLING_ROOT=$prefix
     . "$prefix/env.sh"
-    rustc --version; cargo --version; uv --version; sccache --version; go version
+    rustc --version; cargo --version; uv --version; sccache --version; ccache --version | head -1; go version
     python3 --version
     clang --version | head -1; clang++ --version | head -1
 )
