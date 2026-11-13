@@ -9,7 +9,7 @@ The root of the atc-box repo is the source; `install.sh` puts it in `/opt/toolin
 ## The approach
 
 - **What lives here:** toolchains that don't come from Ubuntu's archive, or come too old: rust
-  (rustup), uv, go, sccache, plus the C/C++ compiler and linker: clang/clang++ (conda-forge) and
+  (rustup), uv, go, sccache, ccache, plus the C/C++ compiler and linker: clang/clang++ (conda-forge) and
   mold. The host is Amazon Linux 2023 and the container Ubuntu, so their distro compilers differ;
   conda's clang brings its own sysroot (glibc 2.34, matching the host) and libstdc++, so both
   sides compile against identical headers and container-built binaries run on the host. C++
@@ -65,6 +65,7 @@ sources `env/<tool>.sh`, which derive everything else from the roots.
 | `env/go.sh` | `GOTOOLCHAIN=local`, `GOPATH`, `GOMODCACHE`, `GOCACHE` |
 | `env/uv.sh` | `UV_CACHE_DIR` (workspace cache), `UV_PYTHON_INSTALL_DIR` (here), `UV_PYTHON_DOWNLOADS=never`, `UV_PYTHON_PREFERENCE` |
 | `env/sccache.sh` | `SCCACHE_DIR` |
+| `env/ccache.sh` | `CCACHE_DIR` and the rest of ccache's config (env only; C/C++, Rust stays on sccache) |
 
 On the host, source it **last** in your shell startup, after anything else that edits `PATH` or
 sets these variables, and set none of them yourself. `env.sh` leaves `PATH` alone when
@@ -121,6 +122,7 @@ the repo it builds. New submodules borrow at init:
 | rust | 1.99.0 |
 | uv | 0.12.13 |
 | sccache | 0.17.0 |
+| ccache | 4.14.3 |
 | go | 1.27.1 |
 | clang / clang++ | 23.1.3 (conda-forge) |
 | mold | 3.0.0 |
