@@ -149,8 +149,9 @@ cd ~/src/atc-box && ./install-user.sh
 ```
 
 mise then treats this repo's `mise.toml` as your global config and uses the `mise.lock` next to it.
-`~/.config/mise/conf.d/*.toml` still loads on top: put personal extras and settings (e.g. `shims_dir`) there,
-not in `~/.config/mise/config.toml`, which is no longer read. Tools marked `os = ["linux"]` (the conda clang,
+`~/.config/mise/config.toml` is no longer read; personal settings go in the environment instead (e.g.
+`export MISE_SHIMS_DIR=~/.local/bin`: mise ignores `shims_dir` from `conf.d`). No tools in `~/.config/mise/conf.d`: they have no lock entry, and a locked install then fails as a whole.
+A tool for one machine goes into `mise.toml` with `os = ["macos"]` (or `["linux"]`), and so into the lock. Tools marked `os = ["linux"]` (the conda clang,
 mold) are skipped on macOS.
 
 **Add or bump a tool** (where you can commit: the Mac):
