@@ -3,7 +3,7 @@
 [settings]
 lockfile = true
 # Linux boxes only (atc-box): conda has no windows build of some tools (mosh), and nothing here runs elsewhere.
-lockfile_platforms = ["linux-x64", "linux-arm64"]
+lockfile_platforms = ["linux-x64", "linux-arm64", "macos-arm64"]
 
 [tools]
 # claude/user
