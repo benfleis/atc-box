@@ -41,7 +41,7 @@ java = "openjdk-17"
 mold = "3.0.0"
 ninja = "1.13.2"
 node = "22"
-"conda:pkg-config" = "0.29.2"
+"conda:pkgconf" = "3.0.10"
 rclone = "1.75.2"
 rust = { version = "1.99.0", profile = "default" }
 sccache = "0.18.0"
