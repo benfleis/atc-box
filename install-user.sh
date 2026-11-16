@@ -40,7 +40,7 @@ have=$("$mise" --version 2>/dev/null | awk '{print $1}')
 # with `os = ["macos"]`, and so into the lock.
 # (mise reads conf.d under $HOME/.config/mise and its global config.toml under $XDG_CONFIG_HOME: check both.)
 if grep -lE '^[[:space:]]*\[tools' "${MISE_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/mise}"/conf.d/*.toml \
-    "$HOME"/.config/mise/conf.d/*.toml 2>/dev/null; then
+    "$HOME"/.config/mise/conf.d/*.toml 2>/dev/null | sort -u | grep .; then
     echo "install-user.sh: the files above add tools outside this repo's lock; move them into $want" >&2
     echo "  (os = [\"macos\"] if only for this machine), leave no [tools] in conf.d, and run me again" >&2
     exit 1
