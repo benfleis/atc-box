@@ -27,7 +27,7 @@ ripgrep = "15.2.0"
 # box/user (from the per-user mise configs, 2026-11-09; one copy for bfleis and atc)
 "aqua:docker/buildx" = "0.38.0"
 aws-cli = { version = "2.39.1", symlink_bins = "true" }
-btop = "1.4.7"
+btop = { version = "1.4.7", os = ["linux"] }                # aqua has Linux builds only
 "conda:lua" = "5.5.0"                                   # prebuilt from conda-forge: vfox lua compiles from lua.org, which does not answer from AWS
 bun = "1.3.14"
 mosh = "1.4.0"
